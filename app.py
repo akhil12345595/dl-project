@@ -19,13 +19,12 @@ if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1000000:
     with st.spinner("Downloading model weights... please wait."):
         urllib.request.urlretrieve(url, MODEL_PATH)
 
-# 2. Load trained model with error handling
+# 2. Load trained model with error handlingg
 @st.cache_resource
 def load_mri_model():
     if not os.path.exists(MODEL_PATH):
         return None
-    return tf.keras.models.load_model(MODEL_PATH)
-
+    return tf.keras.models.load_model(MODEL_PATH, compile=False)
 model = load_mri_model()
 
 if model is None:
