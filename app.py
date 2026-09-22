@@ -1,13 +1,5 @@
 import os
 import gdown
-
-MODEL_PATH = "brain_tumor_model.h5"
-
-if not os.path.exists(MODEL_PATH):
-    file_id = "1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3"
-    url = f"https://drive.google.com/uc?id={file_id}"
-    gdown.download(url, MODEL_PATH, quiet=False)
-import os
 import numpy as np
 from PIL import Image, ImageOps
 import streamlit as st
@@ -19,10 +11,16 @@ st.set_page_config(page_title="Brain Tumor MRI Classifier", layout="centered")
 st.title("Brain Tumor MRI Classifier")
 st.write("Upload a brain MRI scan to detect potential tumors.")
 
-# Using forward slashes avoids all Windows unicode escape errors
-MODEL_PATH = "C:/Users/babuv/Downloads/brain_app/brain_tumor_model.h5"
+# 1. Download model from Google Drive if not already present
+MODEL_PATH = "brain_tumor_model.h5"
 
-# 1. Load trained model with error handling
+if not os.path.exists(MODEL_PATH):
+    file_id = "1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3"
+    url = f"https://drive.google.com/uc?id={file_id}"
+    with st.spinner("Downloading trained model, please wait..."):
+        gdown.download(url, MODEL_PATH, quiet=False)
+
+# 2. Load trained model with error handling
 @st.cache_resource
 def load_mri_model():
     if not os.path.exists(MODEL_PATH):
@@ -32,19 +30,20 @@ def load_mri_model():
 model = load_mri_model()
 
 if model is None:
-    st.error(f"Model file not found at: '{MODEL_PATH}'. Ensure you saved your model as 'brain_tumor_model.h5' in your project folder.")
+    st.error(f"Model file not found at: '{MODEL_PATH}'.")
     st.stop()
 
 # Define class labels
 CLASS_NAMES = ["Glioma", "Meningioma", "No Tumor", "Pituitary"]
 
-# 2. Image Uploader Widget
+# 3. Image Uploader Widget
 uploaded_file = st.file_uploader("Choose an MRI image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     # Display the uploaded image
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded MRI Scan", use_container_width=True)
+    
     # Preprocessing function for standard input (224x224)
     def preprocess_image(img):
         target_size = (224, 224)
@@ -61,7 +60,7 @@ if uploaded_file is not None:
         with st.spinner("Analyzing image..."):
             processed_img = preprocess_image(image)
             
-            # 3. Make Prediction
+            # 4. Make Prediction
             predictions = model.predict(processed_img)
             predicted_index = np.argmax(predictions[0])
             predicted_class = CLASS_NAMES[predicted_index]
