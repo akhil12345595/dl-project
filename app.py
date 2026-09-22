@@ -1,5 +1,5 @@
 import os
-import gdown
+import urllib.request
 import numpy as np
 from PIL import Image, ImageOps
 import streamlit as st
@@ -11,14 +11,14 @@ st.set_page_config(page_title="Brain Tumor MRI Classifier", layout="centered")
 st.title("Brain Tumor MRI Classifier")
 st.write("Upload a brain MRI scan to detect potential tumors.")
 
-# 1. Download model from Google Drive if not already present
-# 1. Download model from Google Drive if not already present
+# 1. Download model from Google Drive without third-party library errors
 MODEL_PATH = "brain_tumor_model.h5"
 
 if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1000000:
-    url = "https://drive.google.com/uc?id=1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3"
-    with st.spinner("Downloading model weights from Drive... this takes 1-2 minutes on first run."):
-        gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
+    url = "https://drive.usercontent.google.com/download?id=1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3&export=download&authuser=0&confirm=t"
+    with st.spinner("Downloading model weights... please wait."):
+        urllib.request.urlretrieve(url, MODEL_PATH)
+
 # 2. Load trained model with error handling
 @st.cache_resource
 def load_mri_model():
@@ -64,6 +64,10 @@ if uploaded_file is not None:
             predicted_index = np.argmax(predictions[0])
             predicted_class = CLASS_NAMES[predicted_index]
             confidence = float(np.max(predictions[0]) * 100)
+
+            st.success("Analysis Complete!")
+            st.write(f"### Result: **{predicted_class}**")
+            st.write(f"Confidence: **{confidence:.2f}%**")
 
             st.success("Analysis Complete!")
             st.write(f"### Result: **{predicted_class}**")
