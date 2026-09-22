@@ -12,14 +12,13 @@ st.title("Brain Tumor MRI Classifier")
 st.write("Upload a brain MRI scan to detect potential tumors.")
 
 # 1. Download model from Google Drive if not already present
+# 1. Download model from Google Drive if not already present
 MODEL_PATH = "brain_tumor_model.h5"
 
-if not os.path.exists(MODEL_PATH):
-    file_id = "1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3"
-    url = f"https://drive.google.com/uc?id={file_id}"
-    with st.spinner("Downloading trained model, please wait..."):
-        gdown.download(url, MODEL_PATH, quiet=False)
-
+if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1000000:
+    url = "https://drive.google.com/uc?id=1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3"
+    with st.spinner("Downloading model weights from Drive... this takes 1-2 minutes on first run."):
+        gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
 # 2. Load trained model with error handling
 @st.cache_resource
 def load_mri_model():
