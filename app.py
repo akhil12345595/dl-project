@@ -1,13 +1,12 @@
 import os
 import gdown
 
-MODEL_PATH = "model.h5"  # Ensure this matches the exact filename your code expects
+MODEL_PATH = "brain_tumor_model.h5"
 
 if not os.path.exists(MODEL_PATH):
     file_id = "1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3"
     url = f"https://drive.google.com/uc?id={file_id}"
     gdown.download(url, MODEL_PATH, quiet=False)
-
 import os
 import numpy as np
 from PIL import Image, ImageOps
