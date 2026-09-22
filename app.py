@@ -1,4 +1,16 @@
 import os
+import gdown
+
+MODEL_PATH = "model.h5"  # Use your actual model filename here
+
+if not os.path.exists(MODEL_PATH):
+    file_id = "YOUR_FILE_ID_HERE"
+    url = f"https://drive.google.com/file/d/1DYgOG7tPFulJfuW-OodqHAMRIpMI94z3/view?usp=sharing"
+    gdown.download(url, MODEL_PATH, quiet=False)
+
+
+
+import os
 import numpy as np
 from PIL import Image, ImageOps
 import streamlit as st
